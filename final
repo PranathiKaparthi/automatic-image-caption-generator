@@ -1,0 +1,88 @@
+import streamlit as st
+from PIL import Image
+import cv2
+import numpy as np
+
+
+from transformers import BlipProcessor, BlipForConditionalGeneration, AutoProcessor, AutoModelForImageClassification
+import torch
+import io
+
+# --- Load Models ---
+@st.cache_resource
+def load_models():
+    # BLIP model for captions
+    caption_processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+    caption_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+
+    # Classification model for satellite/constellation detection
+    sat_processor = AutoProcessor.from_pretrained("microsoft/resnet-50")
+    sat_model = AutoModelForImageClassification.from_pretrained("microsoft/resnet-50")
+
+    return caption_processor, caption_model, sat_processor, sat_model
+
+caption_processor, caption_model, sat_processor, sat_model = load_models()
+
+# --- Streamlit UI ---
+st.title(" AI Satellite & Constellation Identifier")
+st.write("Upload an image to detect blurriness, check if it's a GIF, generate captions, and identify satellite/constellation types.")
+
+uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png", "gif"])
+
+if uploaded_file is not None:
+    image_bytes = uploaded_file.read()
+
+    # Detect GIFs
+    if uploaded_file.type == "image/gif":
+        st.warning("This is a GIF image.")
+    else:
+        st.success("This is a static image.")
+
+    # Show uploaded image
+    image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    
+    st.image(image, caption="Uploaded Image", use_column_width=True)
+
+    # --- Blur Detection ---
+    opencv_image = np.array(image)
+    opencv_image = cv2.cvtColor(opencv_image, cv2.COLOR_RGB2GRAY)
+    variance = cv2.Laplacian(opencv_image, cv2.CV_64F).var()
+
+    st.subheader("Image Clarity Check:")
+    if variance < 100:
+        st.error(f"Image is blurry (Variance of Laplacian: {variance:.2f})")
+    else:
+        st.success(f"Image is clear (Variance of Laplacian: {variance:.2f})")
+
+    # --- Caption Generation ---
+    st.subheader("AI Generated Caption:")
+    caption_inputs = caption_processor(image, return_tensors="pt")
+    caption_out = caption_model.generate(**caption_inputs)
+    caption = caption_processor.decode(caption_out[0], skip_special_tokens=True)
+    st.info(f"*Caption:* {caption}")
+
+    # --- Satellite / Constellation Identification ---
+    st.subheader("Satellite / Constellation Detection:")
+    inputs = sat_processor(images=image, return_tensors="pt")
+    with torch.no_grad():
+        logits = sat_model(**inputs).logits
+    predicted_class_idx = logits.argmax(-1).item()
+
+    # Load the labels (ImageNet labels since ResNet-50 is trained on ImageNet)
+    from transformers import AutoConfig
+    config = AutoConfig.from_pretrained("microsoft/resnet-50")
+    labels = config.id2label
+
+    predicted_label = labels[predicted_class_idx]
+
+    # Basic post-processing for astronomy use-case
+    constellation_keywords = ["constellation", "nebula", "galaxy", "stars", "night sky"]
+    satellite_keywords = ["satellite", "space station", "iss", "hubble", "landsat", "sentinel"]
+
+    lower_caption = caption.lower() + " " + predicted_label.lower()
+    if any(word in lower_caption for word in constellation_keywords):
+        st.success(f" Identified as *Constellation Image* → {predicted_label}")
+    elif any(word in lower_caption for word in satellite_keywords):
+        st.success(f"Identified as *Satellite Image* → {predicted_label}")
+    else:
+        st.warning(f" Could not confidently identify. Closest match: *{predicted_label}*")
