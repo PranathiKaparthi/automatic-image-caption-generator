@@ -1,0 +1,62 @@
+[
+  {
+    "id": "scene_01_park",
+    "category": "outdoor",
+    "clean_image_path": "data\\images\\scene_01_park_clean.png",
+    "motion_blur_path": "data\\images\\scene_01_park_motion_blur.png",
+    "defocus_blur_path": "data\\images\\scene_01_park_defocus_blur.png",
+    "references": [
+      "A green sunny park with tall trees under a clear blue sky.",
+      "A grassy public park with lush green trees and blue sky.",
+      "Sunlight over a vibrant grassy field with deciduous trees."
+    ]
+  },
+  {
+    "id": "scene_02_car",
+    "category": "vehicle",
+    "clean_image_path": "data\\images\\scene_02_car_clean.png",
+    "motion_blur_path": "data\\images\\scene_02_car_motion_blur.png",
+    "defocus_blur_path": "data\\images\\scene_02_car_defocus_blur.png",
+    "references": [
+      "A red sports car parked on an asphalt road in front of a building.",
+      "A bright red automobile stationary on a street.",
+      "A red vehicle parked on the road outside."
+    ]
+  },
+  {
+    "id": "scene_03_desk",
+    "category": "indoor",
+    "clean_image_path": "data\\images\\scene_03_desk_clean.png",
+    "motion_blur_path": "data\\images\\scene_03_desk_motion_blur.png",
+    "defocus_blur_path": "data\\images\\scene_03_desk_defocus_blur.png",
+    "references": [
+      "A modern workspace desk with an open laptop and a white coffee cup.",
+      "A laptop computer sitting on a wooden desk next to a mug.",
+      "An office desk setup featuring a laptop and hot drink."
+    ]
+  },
+  {
+    "id": "scene_04_dog",
+    "category": "animal",
+    "clean_image_path": "data\\images\\scene_04_dog_clean.png",
+    "motion_blur_path": "data\\images\\scene_04_dog_motion_blur.png",
+    "defocus_blur_path": "data\\images\\scene_04_dog_defocus_blur.png",
+    "references": [
+      "A playful golden retriever sitting on the green grass outdoors.",
+      "A golden dog resting in a garden lawn.",
+      "A happy yellow retriever dog sitting on a grassy lawn."
+    ]
+  },
+  {
+    "id": "scene_05_fruits",
+    "category": "food",
+    "clean_image_path": "data\\images\\scene_05_fruits_clean.png",
+    "motion_blur_path": "data\\images\\scene_05_fruits_motion_blur.png",
+    "defocus_blur_path": "data\\images\\scene_05_fruits_defocus_blur.png",
+    "references": [
+      "A ceramic bowl filled with fresh red apples and yellow bananas.",
+      "A fruit bowl containing ripe apples and bananas on a table.",
+      "Fresh colorful fruits including apples and bananas in a bowl."
+    ]
+  }
+]
